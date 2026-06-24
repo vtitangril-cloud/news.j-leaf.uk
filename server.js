@@ -496,7 +496,6 @@ const server = http.createServer(async (req, res) => {
 
         if (breakingItems.length === 0) {
             const placeholder = '<p style="font-size: 0.85rem; color: var(--secondary); margin: 0;">ไม่มีข่าวด่วนขณะนี้</p>';
-            mobileBreakingHtml = placeholder;
             sidebarBreakingHtml = placeholder;
         } else {
             breakingItems.forEach(item => {
@@ -506,9 +505,33 @@ const server = http.createServer(async (req, res) => {
                         <a href="${item.link}" target="_blank" class="breaking-link">${item.title}</a>
                         <div class="breaking-time">แหล่งข่าว: ${item.source} • ${timeStr}</div>
                     </div>`;
-                mobileBreakingHtml += itemHtml;
                 sidebarBreakingHtml += itemHtml;
             });
+        }
+
+        if (category === 'ทั้งหมด') {
+            let mobileItemsHtml = '';
+            if (breakingItems.length === 0) {
+                mobileItemsHtml = '<p style="font-size: 0.85rem; color: var(--secondary); margin: 0;">ไม่มีข่าวด่วนขณะนี้</p>';
+            } else {
+                breakingItems.forEach(item => {
+                    const timeStr = item.pubDate ? new Date(item.pubDate).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' }) + ' น.' : '';
+                    mobileItemsHtml += `
+                        <div class="breaking-item">
+                            <a href="${item.link}" target="_blank" class="breaking-link">${item.title}</a>
+                            <div class="breaking-time">แหล่งข่าว: ${item.source} • ${timeStr}</div>
+                        </div>`;
+                });
+            }
+            mobileBreakingHtml = `
+                <div class="card mobile-breaking-box">
+                    <h3 style="color: var(--breaking); font-size: 1rem; display: flex; align-items: center; margin-bottom: 0.75rem;">
+                        <span class="pulse"></span> ข่าวด่วน (24 ชม. ล่าสุด)
+                    </h3>
+                    <div id="mobile-breaking-list">
+                        ${mobileItemsHtml}
+                    </div>
+                </div>`;
         }
 
         // Prepare stock ticker content
