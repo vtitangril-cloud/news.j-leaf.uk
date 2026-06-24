@@ -315,6 +315,39 @@ function getWeatherForecastHtml() {
         </div>`;
 }
 
+function getTrafficWidgetHtml() {
+    return `
+        <div class="card traffic-widget-container">
+            <h3 style="margin-top: 0; margin-bottom: 0.75rem; color: #d9381e; display: flex; align-items: center; gap: 0.5rem; font-size: 1.15rem;">
+                🚦 รายงานและแผนที่เส้นทางจราจรพิเศษ
+            </h3>
+            <div class="traffic-route-box">
+                <div class="traffic-route-header">
+                    <div style="font-weight: 800; font-size: 1.1rem; color: var(--secondary);">📍 จตุจักร &rarr; เพชรบุรี</div>
+                    <div style="font-size: 0.8rem; color: #5f6368; margin-top: 2px;">เส้นทางเชื่อมต่อกรุงเทพฯ สู่ภาคใต้ (ระยะทาง ~140 กม.)</div>
+                </div>
+                
+                <div class="traffic-route-details">
+                    <div class="traffic-path-option">
+                        <div class="traffic-path-title">🛣️ เส้นทางที่ 1: ถนนพระราม 2 (ทางหลวงหมายเลข 35)</div>
+                        <div class="traffic-path-desc">จตุจักร &rarr; ด่านดินแดง/ทางด่วน &rarr; ถนนพระราม 2 &rarr; สมุทรสาคร &rarr; สมุทรสงคราม &rarr; แยกวังมะนาว &rarr; เข้าสู่ถนนเพชรเกษม (เพชรบุรี) <br><span style="color:#d9381e; font-weight:700;">*ระวังการจราจรหนาแน่นและการก่อสร้างช่วงถนนพระราม 2*</span></div>
+                    </div>
+                    <div class="traffic-path-option" style="margin-top: 0.75rem; border-top: 1px dashed #eee; padding-top: 0.75rem;">
+                        <div class="traffic-path-title">🛣️ เส้นทางที่ 2: ถนนเพชรเกษม (ทางหลวงหมายเลข 4)</div>
+                        <div class="traffic-path-desc">จตุจักร &rarr; ถนนบรมราชชนนี/ปิ่นเกล้า-นครชัยศรี &rarr; นครปฐม &rarr; ราชบุรี &rarr; แยกวังมะนาว &rarr; เพชรบุรี (เส้นทางเลี่ยงการก่อสร้างพระราม 2)</div>
+                    </div>
+                </div>
+                
+                <div class="traffic-action-buttons" style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="https://www.google.com/maps/dir/%E0%B8%85%E0%B8%95%E0%B8%B8%E0%B8%85%E0%B8%B1%E0%B8%82%E0%B8%A3+%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%85%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A3/%E0%B9%80%E0%B8%9E%E0%B8%8A%E0%B8%A3%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5/data=!5m1!1e1" target="_blank" class="traffic-btn primary-btn">
+                        🚗 เปิดแผนที่นำทาง Google Maps (แสดงสภาพจราจรสด/Real-time) &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>`;
+}
+
+
 const server = http.createServer(async (req, res) => {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const pathname = urlObj.pathname;
@@ -479,6 +512,9 @@ const server = http.createServer(async (req, res) => {
 
             const weatherForecastHtml = (category === 'สภาพอากาศ') ? getWeatherForecastHtml() : '';
             renderedHtml = renderedHtml.replace('{{WEATHER_FORECAST}}', weatherForecastHtml);
+
+            const trafficWidgetHtml = (category === 'จราจร') ? getTrafficWidgetHtml() : '';
+            renderedHtml = renderedHtml.replace('{{TRAFFIC_WIDGET}}', trafficWidgetHtml);
 
             // Replace active state placeholder classes
             Object.keys(RSS_MAP).forEach(cat => {

@@ -108,6 +108,17 @@
         .weather-day-name { flex: 1.2; text-align: left; }
         .weather-day-icon { flex: 1.8; text-align: left; display: flex; align-items: center; gap: 0.25rem; }
         .weather-day-temp { flex: 1; text-align: right; font-weight: bold; color: #3c4043; }
+
+        /* Traffic Widget Styling */
+        .traffic-widget-container { background: linear-gradient(135deg, var(--card) 0%, #fff5f5 100%); border: 1px solid #ffd0d0; margin-bottom: 1.5rem; }
+        .traffic-route-box { background: white; border-radius: 8px; border: 1px solid var(--border); padding: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .traffic-route-header { margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.75rem; text-align: left; }
+        .traffic-path-option { text-align: left; }
+        .traffic-path-title { font-weight: bold; font-size: 0.9rem; color: #202124; margin-bottom: 0.25rem; }
+        .traffic-path-desc { font-size: 0.8rem; color: #5f6368; line-height: 1.4; }
+        .traffic-btn { display: block; text-align: center; text-decoration: none; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s; }
+        .traffic-btn.primary-btn { background: #d9381e; color: white; border: none; }
+        .traffic-btn.primary-btn:hover { background: #b82810; }
     </style>
 </head>
 <body>
@@ -213,6 +224,7 @@
             
             <h2 style="font-size: 1.3rem; margin: 0 0 0.5rem 0;">📰 {{CATEGORY_NAME}}</h2>
             {{WEATHER_FORECAST}}
+            {{TRAFFIC_WIDGET}}
             {{NEWS_CARDS}}
             
         </div>
