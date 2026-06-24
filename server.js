@@ -323,23 +323,23 @@ function getTrafficWidgetHtml() {
             </h3>
             <div class="traffic-route-box">
                 <div class="traffic-route-header">
-                    <div style="font-weight: 800; font-size: 1.1rem; color: var(--secondary);">📍 จตุจักร &rarr; เพชรบุรี</div>
-                    <div style="font-size: 0.8rem; color: #5f6368; margin-top: 2px;">เส้นทางเชื่อมต่อกรุงเทพฯ สู่ภาคใต้ (ระยะทาง ~140 กม.)</div>
+                    <div style="font-weight: 800; font-size: 1.1rem; color: var(--secondary);">📍 จตุจักร &rarr; หมู่บ้านจะโปรง อ.หนองหญ้าปล้อง</div>
+                    <div style="font-size: 0.8rem; color: #5f6368; margin-top: 2px;">เส้นทางจากกรุงเทพฯ สู่ อ.หนองหญ้าปล้อง จ.เพชรบุรี (ระยะทาง ~160 กม.)</div>
                 </div>
                 
                 <div class="traffic-route-details">
                     <div class="traffic-path-option">
                         <div class="traffic-path-title">🛣️ เส้นทางที่ 1: ถนนพระราม 2 (ทางหลวงหมายเลข 35)</div>
-                        <div class="traffic-path-desc">จตุจักร &rarr; ด่านดินแดง/ทางด่วน &rarr; ถนนพระราม 2 &rarr; สมุทรสาคร &rarr; สมุทรสงคราม &rarr; แยกวังมะนาว &rarr; เข้าสู่ถนนเพชรเกษม (เพชรบุรี) <br><span style="color:#d9381e; font-weight:700;">*ระวังการจราจรหนาแน่นและการก่อสร้างช่วงถนนพระราม 2*</span></div>
+                        <div class="traffic-path-desc">จตุจักร &rarr; ด่านดินแดง/ทางด่วน &rarr; ถนนพระราม 2 &rarr; สมุทรสาคร &rarr; สมุทรสงคราม &rarr; แยกวังมะนาว &rarr; เข้าสู่ถนนเพชรเกษม &rarr; แยกปากท่อ/เขาย้อย &rarr; เลี้ยวขวาเข้าทางหลวง 3349 สู่ อ.หนองหญ้าปล้อง (ม.จะโปรง) <br><span style="color:#d9381e; font-weight:700;">*ระวังการจราจรหนาแน่นและการก่อสร้างช่วงถนนพระราม 2*</span></div>
                     </div>
                     <div class="traffic-path-option" style="margin-top: 0.75rem; border-top: 1px dashed #eee; padding-top: 0.75rem;">
                         <div class="traffic-path-title">🛣️ เส้นทางที่ 2: ถนนเพชรเกษม (ทางหลวงหมายเลข 4)</div>
-                        <div class="traffic-path-desc">จตุจักร &rarr; ถนนบรมราชชนนี/ปิ่นเกล้า-นครชัยศรี &rarr; นครปฐม &rarr; ราชบุรี &rarr; แยกวังมะนาว &rarr; เพชรบุรี (เส้นทางเลี่ยงการก่อสร้างพระราม 2)</div>
+                        <div class="traffic-path-desc">จตุจักร &rarr; ถนนบรมราชชนนี/ปิ่นเกล้า-นครชัยศรี &rarr; นครปฐม &rarr; ราชบุรี &rarr; แยกวังมะนาว &rarr; เข้าสู่ อ.หนองหญ้าปล้อง (ม.จะโปรง) (เส้นทางเลี่ยงการก่อสร้างพระราม 2)</div>
                     </div>
                 </div>
                 
                 <div class="traffic-action-buttons" style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.google.com/maps/dir/%E0%B8%85%E0%B8%95%E0%B8%B8%E0%B8%85%E0%B8%B1%E0%B8%82%E0%B8%A3+%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%85%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A3/%E0%B9%80%E0%B8%9E%E0%B8%8A%E0%B8%A3%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5/data=!5m1!1e1" target="_blank" class="traffic-btn primary-btn">
+                    <a href="https://www.google.com/maps/dir/%E0%B8%85%E0%B8%95%E0%B8%B8%E0%B8%85%E0%B8%B1%E0%B8%82%E0%B8%A3+%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%85%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A3/%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B9%88%E0%B8%9A%E0%B9%85%E0%B8%B2%E0%B8%99%E0%B8%88%E0%B8%B0%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B8%87%20%E0%B8%AD.%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%8D%E0%B9%89%E0%B8%B2%E0%B8%9B%E0%B8%A5%E0%B9%89%E0%B8%AD%E0%B8%87/data=!5m1!1e1" target="_blank" class="traffic-btn primary-btn">
                         🚗 เปิดแผนที่นำทาง Google Maps (แสดงสภาพจราจรสด/Real-time) &rarr;
                     </a>
                 </div>
