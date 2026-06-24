@@ -88,6 +88,7 @@ let cache = {
         { name: '1 CNY', price: '4.88' }
     ],
     weather: null,
+    worldcup: null,
     lastUpdated: new Date()
 };
 
@@ -181,6 +182,25 @@ async function updateMarketData(updateStocks = true, updateGlobal = true) {
                 }
             } catch (err) {
                 console.error('Failed to fetch weather forecast:', err.message);
+            }
+
+            // Fetch World Cup data
+            try {
+                const [wcRes, statsRes] = await Promise.all([
+                    fetch('https://worldcup26.ir/get/games'),
+                    fetch('https://www.thestatsapi.com/world-cup/data/fixtures.json')
+                ]);
+                if (wcRes.ok && statsRes.ok) {
+                    const wcData = await wcRes.json();
+                    const statsData = await statsRes.json();
+                    cache.worldcup = {
+                        results: wcData.games,
+                        fixtures: statsData.fixtures,
+                        updatedAt: new Date()
+                    };
+                }
+            } catch (err) {
+                console.error('Failed to fetch World Cup data:', err.message);
             }
         }
 
@@ -407,6 +427,98 @@ function getTrafficWidgetHtml() {
         </div>`;
 }
 
+function getSportsDashboardHtml() {
+    if (!cache.worldcup) {
+        return `
+        <div class="card worldcup-dashboard-container">
+            <p style="text-align: center; color: var(--secondary); margin: 0; padding: 1.5rem;">กำลังโหลดข้อมูลผลบอลโลกและตารางดูบอล...</p>
+        </div>`;
+    }
+
+    const { results, fixtures } = cache.worldcup;
+    const now = new Date();
+
+    // 1. Filter finished games from results
+    const finishedMatches = results
+        .filter(g => g.finished === 'TRUE')
+        .map(g => {
+            // parse local_date like "06/23/2026 12:00"
+            const parts = g.local_date.split(' ');
+            const dateParts = parts[0].split('/');
+            const timeParts = parts[1].split(':');
+            const d = new Date(dateParts[2], dateParts[0]-1, dateParts[1], timeParts[0], timeParts[1]);
+            return { ...g, parsedDate: d };
+        })
+        .sort((a, b) => b.parsedDate - a.parsedDate) // newest first
+        .slice(0, 5);
+
+    // 2. Filter upcoming games from fixtures
+    const upcomingMatches = fixtures
+        .filter(f => new Date(f.kickoffUtc) >= now)
+        .sort((a, b) => new Date(a.kickoffUtc) - new Date(b.kickoffUtc)) // closest first
+        .slice(0, 5);
+
+    let resultsHtml = '';
+    if (finishedMatches.length === 0) {
+        resultsHtml = '<p style="font-size: 0.85rem; color: var(--secondary); text-align: center; margin: 1rem 0;">ไม่มีผลการแข่งขันล่าสุด</p>';
+    } else {
+        finishedMatches.forEach(g => {
+            resultsHtml += `
+                <div class="wc-result-item">
+                    <div class="wc-team-col home-team">${g.home_team_name_en}</div>
+                    <div class="wc-score-col">${g.home_score} - ${g.away_score}</div>
+                    <div class="wc-team-col away-team">${g.away_team_name_en}</div>
+                </div>`;
+        });
+    }
+
+    let fixturesHtml = '';
+    if (upcomingMatches.length === 0) {
+        fixturesHtml = '<p style="font-size: 0.85rem; color: var(--secondary); text-align: center; margin: 1rem 0;">ไม่มีโปรแกรมการแข่งขันเร็วๆ นี้</p>';
+    } else {
+        upcomingMatches.forEach(f => {
+            const kickoff = new Date(f.kickoffUtc);
+            const timeStr = kickoff.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Bangkok' }) + ' น.';
+            const dateStr = kickoff.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', timeZone: 'Asia/Bangkok' });
+            fixturesHtml += `
+                <div class="wc-fixture-item">
+                    <div class="wc-fixture-time"><b>${dateStr}</b> • ${timeStr}</div>
+                    <div class="wc-fixture-match">${f.homeTeam} vs ${f.awayTeam}</div>
+                    <div class="wc-fixture-venue"><small>📍 ${f.stadium} (${f.hostCity})</small></div>
+                </div>`;
+        });
+    }
+
+    return `
+        <div class="card worldcup-dashboard-container">
+            <h3 style="margin-top: 0; margin-bottom: 1rem; border-bottom: 2px solid #e8f0fe; padding-bottom: 0.5rem; color: #1967d2; display: flex; align-items: center; gap: 0.5rem; font-size: 1.15rem;">
+                🏆 FIFA World Cup 2026 Dashboard
+            </h3>
+            <div class="wc-dashboard-grid">
+                <div class="wc-dashboard-section">
+                    <h4 style="margin-top: 0; margin-bottom: 0.75rem; color: #1967d2; font-size: 0.95rem; border-bottom: 1px dashed #eee; padding-bottom: 0.25rem;">
+                        ⚽ ผลการแข่งขันล่าสุด (Recent Results)
+                    </h4>
+                    <div class="wc-results-list">
+                        ${resultsHtml}
+                    </div>
+                </div>
+                <div class="wc-dashboard-section">
+                    <h4 style="margin-top: 0; margin-bottom: 0.75rem; color: #1967d2; font-size: 0.95rem; border-bottom: 1px dashed #eee; padding-bottom: 0.25rem;">
+                        📅 ตารางการแข่งขัน & ถ่ายทอดสด (Upcoming Matches)
+                    </h4>
+                    <div class="wc-fixtures-list">
+                        ${fixturesHtml}
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 0.65rem; color: var(--secondary); text-align: right; margin-top: 0.75rem;">
+                อัปเดตล่าสุด: ${new Date(cache.worldcup.updatedAt).toLocaleTimeString('th-TH')} น.
+            </div>
+        </div>`;
+}
+
+
 
 const server = http.createServer(async (req, res) => {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
@@ -598,6 +710,9 @@ const server = http.createServer(async (req, res) => {
 
             const trafficWidgetHtml = (category === 'จราจร') ? getTrafficWidgetHtml() : '';
             renderedHtml = renderedHtml.replace('{{TRAFFIC_WIDGET}}', trafficWidgetHtml);
+            
+            const sportsDashboardHtml = (category === 'กีฬา') ? getSportsDashboardHtml() : '';
+            renderedHtml = renderedHtml.replace('{{SPORTS_DASHBOARD}}', sportsDashboardHtml);
 
             // Replace active state placeholder classes
             Object.keys(RSS_MAP).forEach(cat => {

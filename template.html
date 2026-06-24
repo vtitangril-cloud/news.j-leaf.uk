@@ -119,6 +119,24 @@
         .traffic-btn { display: block; text-align: center; text-decoration: none; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s; }
         .traffic-btn.primary-btn { background: #d9381e; color: white; border: none; }
         .traffic-btn.primary-btn:hover { background: #b82810; }
+
+        /* World Cup Dashboard Styling */
+        .worldcup-dashboard-container { background: linear-gradient(135deg, var(--card) 0%, #f4f8ff 100%); border: 1px solid #c2dbff; margin-bottom: 1.5rem; }
+        .wc-dashboard-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+        @media (min-width: 768px) {
+            .wc-dashboard-grid { flex-direction: row; }
+            .wc-dashboard-section { flex: 1; }
+        }
+        .wc-results-list, .wc-fixtures-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .wc-result-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: white; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem; }
+        .wc-team-col { flex: 1; font-weight: bold; }
+        .wc-team-col.home-team { text-align: right; padding-right: 0.5rem; }
+        .wc-team-col.away-team { text-align: left; padding-left: 0.5rem; }
+        .wc-score-col { font-size: 0.95rem; font-weight: 800; background: #e8f0fe; color: #1967d2; padding: 0.2rem 0.6rem; border-radius: 4px; min-width: 60px; text-align: center; }
+        .wc-fixture-item { padding: 0.5rem; background: white; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem; text-align: left; }
+        .wc-fixture-time { color: #1967d2; font-size: 0.8rem; margin-bottom: 0.2rem; }
+        .wc-fixture-match { font-weight: bold; margin-bottom: 0.1rem; }
+        .wc-fixture-venue { color: #718096; }
     </style>
 </head>
 <body>
@@ -218,6 +236,7 @@
             <h2 style="font-size: 1.3rem; margin: 0 0 0.5rem 0;">📰 {{CATEGORY_NAME}}</h2>
             {{WEATHER_FORECAST}}
             {{TRAFFIC_WIDGET}}
+            {{SPORTS_DASHBOARD}}
             {{NEWS_CARDS}}
             
         </div>
