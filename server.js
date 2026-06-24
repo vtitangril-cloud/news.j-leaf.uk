@@ -24,7 +24,7 @@ const RSS_MAP = {
     'การเกษตร': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%A7%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
     'เพชรบุรี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%9E%E0%B8%8A%E0%B8%A3%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
     'ทั่วไป': 'https://news.google.com/rss?hl=th&gl=TH&ceid=TH:th',
-    'กีฬา': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B4%E0%B8%94%E0%B8%B2&hl=th&gl=TH&ceid=TH:th'
+    'กีฬา': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B5%E0%B8%AC%E0%B8%B2&hl=th&gl=TH&ceid=TH:th'
 };
 
 // Global cache for stocks, crypto, fuel, exchange rates
