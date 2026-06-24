@@ -91,96 +91,131 @@ let cache = {
     lastUpdated: new Date()
 };
 
+// Function to check if Thai Stock Market is currently trading
+function isMarketHours() {
+    const now = new Date();
+    // Convert to Bangkok timezone (UTC+7)
+    const bangkokTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
+    const day = bangkokTime.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    if (day === 0 || day === 6) return false; // Weekend
+
+    const hours = bangkokTime.getHours();
+    const minutes = bangkokTime.getMinutes();
+    const timeVal = hours * 60 + minutes; // Minutes since midnight
+
+    // Morning Session: 09:45 - 13:00 (Trading: 10:00 - 12:30)
+    // Afternoon Session: 14:15 - 17:00 (Trading: 14:30 - 16:30)
+    const morningStart = 9 * 60 + 45; // 09:45
+    const morningEnd = 13 * 60;       // 13:00
+    const afternoonStart = 14 * 60 + 15; // 14:15
+    const afternoonEnd = 17 * 60;        // 17:00
+
+    return (timeVal >= morningStart && timeVal <= morningEnd) || 
+           (timeVal >= afternoonStart && timeVal <= afternoonEnd);
+}
+
 // Function to fetch background market data
-async function updateMarketData() {
+async function updateMarketData(updateStocks = true, updateGlobal = true) {
     try {
-        // Fetch Exchange Rate (USD to THB, JPY, CNY)
-        const erRes = await fetch('https://open.er-api.com/v6/latest/USD');
-        if (erRes.ok) {
-            const data = await erRes.json();
-            const rates = data.rates;
-            if (rates && rates.THB) {
-                const usdToThb = rates.THB.toFixed(2);
-                const jpyToThb = ((100 / rates.JPY) * rates.THB).toFixed(2);
-                const cnyToThb = ((1 / rates.CNY) * rates.THB).toFixed(2);
-
-                cache.exchange = [
-                    { name: '1 USD', price: usdToThb },
-                    { name: '100 JPY', price: jpyToThb },
-                    { name: '1 CNY', price: cnyToThb }
-                ];
-            }
-        }
-
-        // Fetch Crypto Prices (BTC, ETH)
-        const cryptoRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=thb,usd');
-        if (cryptoRes.ok) {
-            const data = await cryptoRes.json();
-            if (data.bitcoin && data.ethereum) {
-                cache.crypto = [
-                    {
-                        name: 'Bitcoin (BTC)',
-                        thb: data.bitcoin.thb.toLocaleString('th-TH'),
-                        usd: data.bitcoin.usd.toLocaleString('en-US')
-                    },
-                    {
-                        name: 'Ethereum (ETH)',
-                        thb: data.ethereum.thb.toLocaleString('th-TH'),
-                        usd: data.ethereum.usd.toLocaleString('en-US')
-                    }
-                ];
-            }
-        }
-
-        // Fetch Yahoo Finance SET index & key stocks
-        const symbols = ['%5ETH', 'PTT.BK', 'CPALL.BK', 'ADVANC.BK', 'AOT.BK'];
-        const stockData = [];
-        for (const sym of symbols) {
+        if (updateGlobal) {
+            // Fetch Exchange Rate (USD to THB, JPY, CNY)
             try {
-                const yahooRes = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`);
-                if (yahooRes.ok) {
-                    const data = await yahooRes.json();
-                    const meta = data.chart?.result?.[0]?.meta;
-                    if (meta) {
-                        const price = meta.regularMarketPrice;
-                        const prevClose = meta.chartPreviousClose;
-                        const changeVal = price - prevClose;
-                        const changePercent = ((changeVal / prevClose) * 100).toFixed(2);
-                        const changeStr = `${changeVal >= 0 ? '+' : ''}${changePercent}%`;
-                        const cleanName = sym.replace('%5ETH', 'SET').replace('.BK', '');
-                        stockData.push({
-                            name: cleanName,
-                            price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                            change: changeStr,
-                            up: changeVal >= 0
-                        });
+                const erRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                if (erRes.ok) {
+                    const data = await erRes.json();
+                    const rates = data.rates;
+                    if (rates && rates.THB) {
+                        const usdToThb = rates.THB.toFixed(2);
+                        const jpyToThb = ((100 / rates.JPY) * rates.THB).toFixed(2);
+                        const cnyToThb = ((1 / rates.CNY) * rates.THB).toFixed(2);
+
+                        cache.exchange = [
+                            { name: '1 USD', price: usdToThb },
+                            { name: '100 JPY', price: jpyToThb },
+                            { name: '1 CNY', price: cnyToThb }
+                        ];
                     }
                 }
             } catch (err) {
-                console.error(`Error fetching Yahoo stock ${sym}:`, err.message);
+                console.error('Failed to update exchange rates:', err.message);
             }
-        }
-        if (stockData.length === symbols.length) {
-            cache.set = stockData;
+
+            // Fetch Crypto Prices (BTC, ETH)
+            try {
+                const cryptoRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=thb,usd');
+                if (cryptoRes.ok) {
+                    const data = await cryptoRes.json();
+                    if (data.bitcoin && data.ethereum) {
+                        cache.crypto = [
+                            {
+                                name: 'Bitcoin (BTC)',
+                                thb: data.bitcoin.thb.toLocaleString('th-TH'),
+                                usd: data.bitcoin.usd.toLocaleString('en-US')
+                            },
+                            {
+                                name: 'Ethereum (ETH)',
+                                thb: data.ethereum.thb.toLocaleString('th-TH'),
+                                usd: data.ethereum.usd.toLocaleString('en-US')
+                            }
+                        ];
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to update crypto prices:', err.message);
+            }
+
+            // Fetch Weather Forecast (Bangkok & Phetchaburi)
+            try {
+                const [bkkRes, pbiRes] = await Promise.all([
+                    fetch('https://api.open-meteo.com/v1/forecast?latitude=13.7563&longitude=100.5018&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Bangkok'),
+                    fetch('https://api.open-meteo.com/v1/forecast?latitude=13.1119&longitude=99.9443&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Bangkok')
+                ]);
+                if (bkkRes.ok && pbiRes.ok) {
+                    const bkkData = await bkkRes.json();
+                    const pbiData = await pbiRes.json();
+                    cache.weather = {
+                        bkk: bkkData,
+                        pbi: pbiData,
+                        updatedAt: new Date()
+                    };
+                }
+            } catch (err) {
+                console.error('Failed to fetch weather forecast:', err.message);
+            }
         }
 
-        // Fetch Weather Forecast (Bangkok & Phetchaburi)
-        try {
-            const [bkkRes, pbiRes] = await Promise.all([
-                fetch('https://api.open-meteo.com/v1/forecast?latitude=13.7563&longitude=100.5018&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Bangkok'),
-                fetch('https://api.open-meteo.com/v1/forecast?latitude=13.1119&longitude=99.9443&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Bangkok')
-            ]);
-            if (bkkRes.ok && pbiRes.ok) {
-                const bkkData = await bkkRes.json();
-                const pbiData = await pbiRes.json();
-                cache.weather = {
-                    bkk: bkkData,
-                    pbi: pbiData,
-                    updatedAt: new Date()
-                };
+        if (updateStocks) {
+            // Fetch Yahoo Finance SET index & key stocks
+            const symbols = ['%5ETH', 'PTT.BK', 'CPALL.BK', 'ADVANC.BK', 'AOT.BK'];
+            const stockData = [];
+            for (const sym of symbols) {
+                try {
+                    const yahooRes = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`);
+                    if (yahooRes.ok) {
+                        const data = await yahooRes.json();
+                        const meta = data.chart?.result?.[0]?.meta;
+                        if (meta) {
+                            const price = meta.regularMarketPrice;
+                            const prevClose = meta.chartPreviousClose;
+                            const changeVal = price - prevClose;
+                            const changePercent = ((changeVal / prevClose) * 100).toFixed(2);
+                            const changeStr = `${changeVal >= 0 ? '+' : ''}${changePercent}%`;
+                            const cleanName = sym.replace('%5ETH', 'SET').replace('.BK', '');
+                            stockData.push({
+                                name: cleanName,
+                                price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                                change: changeStr,
+                                up: changeVal >= 0
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error(`Error fetching Yahoo stock ${sym}:`, err.message);
+                }
             }
-        } catch (err) {
-            console.error('Failed to fetch weather forecast:', err.message);
+            if (stockData.length === symbols.length) {
+                cache.set = stockData;
+            }
         }
 
         cache.lastUpdated = new Date();
@@ -189,10 +224,35 @@ async function updateMarketData() {
     }
 }
 
-// Start background updates every 30 minutes
-setInterval(updateMarketData, 30 * 60 * 1000);
+let lastStockUpdate = 0;
+let lastGlobalUpdate = 0;
+
+async function checkAndUpdates() {
+    const now = Date.now();
+    const marketOpen = isMarketHours();
+
+    // Determine interval thresholds
+    const stockInterval = marketOpen ? 5 * 60 * 1000 : 30 * 60 * 1000;
+    const globalInterval = 30 * 60 * 1000;
+
+    let shouldUpdateStocks = (now - lastStockUpdate) >= stockInterval;
+    let shouldUpdateGlobal = (now - lastGlobalUpdate) >= globalInterval;
+
+    if (shouldUpdateStocks || shouldUpdateGlobal) {
+        try {
+            await updateMarketData(shouldUpdateStocks, shouldUpdateGlobal);
+            if (shouldUpdateStocks) lastStockUpdate = now;
+            if (shouldUpdateGlobal) lastGlobalUpdate = now;
+        } catch (err) {
+            console.error('Update tick error:', err.message);
+        }
+    }
+}
+
+// Start checking queue every 1 minute
+setInterval(checkAndUpdates, 60 * 1000);
 // Trigger initial fetch
-updateMarketData();
+checkAndUpdates();
 
 // Utility function to fetch RSS feeds
 async function fetchRSS(url) {
