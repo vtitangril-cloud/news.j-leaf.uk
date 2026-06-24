@@ -403,8 +403,8 @@ function getTrafficWidgetHtml() {
             </h3>
             <div class="traffic-route-box">
                 <div class="traffic-route-header">
-                    <div style="font-weight: 800; font-size: 1.1rem; color: var(--secondary);">📍 จตุจักร &rarr; หมู่บ้านจะโปรง อ.หนองหญ้าปล้อง</div>
-                    <div style="font-size: 0.8rem; color: #5f6368; margin-top: 2px;">เส้นทางจากกรุงเทพฯ สู่ อ.หนองหญ้าปล้อง จ.เพชรบุรี (ระยะทาง ~160 กม.)</div>
+                    <div id="traffic-route-title" style="font-weight: 800; font-size: 1.1rem; color: var(--secondary);">📍 จตุจักร &rarr; หมู่บ้านจะโปรง อ.หนองหญ้าปล้อง</div>
+                    <div id="traffic-route-subtitle" style="font-size: 0.8rem; color: #5f6368; margin-top: 2px;">เส้นทางจากกรุงเทพฯ สู่ อ.หนองหญ้าปล้อง จ.เพชรบุรี (ระยะทาง ~160 กม.)</div>
                 </div>
                 
                 <div class="traffic-route-details">
@@ -419,7 +419,7 @@ function getTrafficWidgetHtml() {
                 </div>
                 
                 <div class="traffic-action-buttons" style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.google.com/maps/dir/%E0%B8%85%E0%B8%95%E0%B8%B8%E0%B8%85%E0%B8%B1%E0%B8%82%E0%B8%A3+%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%85%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A3/%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B9%88%E0%B8%9A%E0%B9%85%E0%B8%B2%E0%B8%99%E0%B8%88%E0%B8%B0%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B8%87%20%E0%B8%AD.%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%8D%E0%B9%89%E0%B8%B2%E0%B8%9B%E0%B8%A5%E0%B9%89%E0%B8%AD%E0%B8%87/data=!5m1!1e1" target="_blank" class="traffic-btn primary-btn">
+                    <a id="traffic-nav-link" href="https://www.google.com/maps/dir/%E0%B8%85%E0%B8%95%E0%B8%B8%E0%B8%85%E0%B8%B1%E0%B8%82%E0%B8%A3+%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%85%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A3/%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B9%88%E0%B8%9A%E0%B9%85%E0%B8%B2%E0%B8%99%E0%B8%88%E0%B8%B0%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B8%87%20%E0%B8%AD.%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%8D%E0%B9%89%E0%B8%B2%E0%B8%9B%E0%B8%A5%E0%B9%89%E0%B8%AD%E0%B8%87/data=!5m1!1e1" target="_blank" class="traffic-btn primary-btn">
                         🚗 เปิดแผนที่นำทาง Google Maps (แสดงสภาพจราจรสด/Real-time) &rarr;
                     </a>
                 </div>

@@ -147,23 +147,23 @@
             .weather-flex-grid { flex-direction: row; }
             .weather-city-card { flex: 1; }
         }
-        .weather-city-card { background: white; border-radius: 8px; border: 1px solid var(--border); padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .weather-city-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px dashed #eee; padding-bottom: 0.5rem; }
+        .weather-city-card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); color: var(--text); }
+        .weather-city-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; }
         .weather-city-current { display: flex; align-items: center; }
         .weather-forecast-list { display: flex; flex-direction: column; gap: 0.5rem; }
-        .weather-forecast-day { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; }
+        .weather-forecast-day { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
         .weather-forecast-day:last-child { border-bottom: none; }
         .weather-day-name { flex: 1.2; text-align: left; }
         .weather-day-icon { flex: 1.8; text-align: left; display: flex; align-items: center; gap: 0.25rem; }
-        .weather-day-temp { flex: 1; text-align: right; font-weight: bold; color: #3c4043; }
+        .weather-day-temp { flex: 1; text-align: right; font-weight: bold; color: var(--text); }
 
         /* Traffic Widget Styling */
         .traffic-widget-container { background: linear-gradient(135deg, var(--card) 0%, #fff5f5 100%); border: 1px solid #ffd0d0; margin-bottom: 1.5rem; }
-        .traffic-route-box { background: white; border-radius: 8px; border: 1px solid var(--border); padding: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .traffic-route-header { margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.75rem; text-align: left; }
+        .traffic-route-box { background: var(--card); border-radius: 8px; border: 1px solid var(--border); padding: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); color: var(--text); }
+        .traffic-route-header { margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; text-align: left; }
         .traffic-path-option { text-align: left; }
-        .traffic-path-title { font-weight: bold; font-size: 0.9rem; color: #202124; margin-bottom: 0.25rem; }
-        .traffic-path-desc { font-size: 0.8rem; color: #5f6368; line-height: 1.4; }
+        .traffic-path-title { font-weight: bold; font-size: 0.9rem; color: var(--text); margin-bottom: 0.25rem; }
+        .traffic-path-desc { font-size: 0.8rem; color: var(--secondary); line-height: 1.4; }
         .traffic-btn { display: block; text-align: center; text-decoration: none; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s; }
         .traffic-btn.primary-btn { background: #d9381e; color: white; border: none; }
         .traffic-btn.primary-btn:hover { background: #b82810; }
@@ -456,75 +456,209 @@
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); }); }
 
-        // Weather Logic
-        const weatherBox = document.getElementById('weather-box');
-        if (weatherBox) {
-            function getWMOIcon(code) {
-                if ([0].includes(code)) return '☀️';
-                if ([1, 2].includes(code)) return '⛅';
-                if ([3].includes(code)) return '☁️';
-                if ([45, 48].includes(code)) return '🌫️';
-                if ([51, 53, 55, 61, 63, 65].includes(code)) return '🌧️';
-                if ([80, 81, 82].includes(code)) return '🌦️';
-                if ([95, 96, 99].includes(code)) return '⛈️';
-                return '🌤️';
-            }
+        // Weather & Traffic Geolocation Logic
+        const WEATHER_CODE_MAP = {
+            0: { text: 'ฟ้าใส', emoji: '☀️' },
+            1: { text: 'แดดจ้า/เมฆบางส่วน', emoji: '🌤️' },
+            2: { text: 'มีเมฆบางส่วน', emoji: '⛅' },
+            3: { text: 'มีเมฆมาก', emoji: '☁️' },
+            45: { text: 'มีหมอก', emoji: '🌫️' },
+            48: { text: 'มีหมอกจัด', emoji: '🌫️' },
+            51: { text: 'ฝนตกละอองเบา', emoji: '🌧️' },
+            53: { text: 'ฝนตกละอองปานกลาง', emoji: '🌧️' },
+            55: { text: 'ฝนตกละอองหนาแน่น', emoji: '🌧️' },
+            56: { text: 'ฝนละอองเย็นเบา', emoji: '🌧️' },
+            57: { text: 'ฝนละอองเย็นปานกลาง', emoji: '🌧️' },
+            61: { text: 'ฝนตกเล็กน้อย', emoji: '🌧️' },
+            63: { text: 'ฝนตกปานกลาง', emoji: '🌧️' },
+            65: { text: 'ฝนตกหนัก', emoji: '🌧️' },
+            66: { text: 'ฝนตกเย็นเบา', emoji: '🌧️' },
+            67: { text: 'ฝนตกเย็นหนัก', emoji: '🌧️' },
+            71: { text: 'หิมะตกเล็กน้อย', emoji: '🌨️' },
+            73: { text: 'หิมะตกปานกลาง', emoji: '🌨️' },
+            75: { text: 'หิมะตกหนัก', emoji: '🌨️' },
+            77: { text: 'เกล็ดหิมะ', emoji: '🌨️' },
+            80: { text: 'ฝนซู่เล็กน้อย', emoji: '🌦️' },
+            81: { text: 'ฝนซู่ปานกลาง', emoji: '🌦️' },
+            82: { text: 'ฝนซู่ตกหนักมาก', emoji: '🌧️' },
+            85: { text: 'หิมะซู่เล็กน้อย', emoji: '🌨️' },
+            86: { text: 'หิมะซู่หนัก', emoji: '🌨️' },
+            95: { text: 'พายุฝนฟ้าคะนอง', emoji: '⛈️' },
+            96: { text: 'พายุฝนฟ้าคะนองและลูกเห็บตกเล็กน้อย', emoji: '⛈️' },
+            99: { text: 'พายุฝนฟ้าคะนองและลูกเห็บตกหนัก', emoji: '⛈️' }
+        };
 
-            function renderWeather(lat, lon) {
-                const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FBangkok";
-                fetch(url)
-                    .then(res => res.json())
-                    .then(data => {
-                        const daily = data.daily;
-                        let weatherHtml = '<div style="display: flex; gap: 0.75rem;">';
-                        for(let i=0; i<7; i++) {
-                            const date = new Date(daily.time[i]);
-                            const dayStr = date.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric' });
-                            const maxT = Math.round(daily.temperature_2m_max[i]);
-                            const minT = Math.round(daily.temperature_2m_min[i]);
-                            const icon = getWMOIcon(daily.weather_code[i]);
-                            const pop = daily.precipitation_probability_max[i] || 0;
-                            
-                            weatherHtml += '<div style="min-width: 85px; background: #f8f9fa; padding: 0.75rem 0.5rem; border-radius: 12px; text-align: center; flex-shrink: 0; border: 1px solid #eee;">' +
-                                    '<div style="font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: #5f6368;">' + dayStr + '</div>' +
-                                    '<div style="font-size: 1.8rem; margin: 5px 0;">' + icon + '</div>' +
-                                    '<div style="font-size: 0.9rem; font-weight: 700;">' + maxT + '° <span style="font-size: 0.7rem; color: #80868b; font-weight: normal;">' + minT + '°</span></div>' +
-                                    '<div style="font-size: 0.7rem; color: #1a73e8; margin-top: 5px; font-weight: bold;">💧 ' + pop + '%</div>' +
-                                '</div>';
-                        }
-                        weatherHtml += '</div>';
-                        document.getElementById('weather-loading').style.display = 'none';
-                        const content = document.getElementById('weather-content');
-                        content.innerHTML = weatherHtml;
-                        content.style.display = 'block';
-                    })
-                    .catch(err => {
-                        document.getElementById('weather-loading').innerText = 'ไม่สามารถโหลดข้อมูลได้ (API Error)';
-                    });
-                    
-                const geoUrl = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat + "&longitude=" + lon + "&localityLanguage=th";
-                fetch(geoUrl)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('weather-location').innerText = '📍 ' + (data.locality || data.city || data.principalSubdivision || 'ระบุตำแหน่งแล้ว');
-                    }).catch(e => {
-                        document.getElementById('weather-location').innerText = '📍 ระบุตำแหน่งแล้ว';
-                    });
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => renderWeather(pos.coords.latitude, pos.coords.longitude),
-                    (err) => {
-                        document.getElementById('weather-location').innerText = '📍 ไม่ได้เปิดสิทธิ์ตำแหน่ง (แสดง กทม.)';
-                        renderWeather(13.75, 100.51);
-                    },
-                    { timeout: 5000 }
-                );
-            } else {
-                renderWeather(13.75, 100.51);
-            }
+        function getWeatherInfo(code) {
+            return WEATHER_CODE_MAP[code] || { text: 'ไม่ทราบสภาพอากาศ', emoji: '🌤️' };
         }
+
+        function loadUserWeather() {
+            const grid = document.querySelector('.weather-flex-grid');
+            if (!grid) return;
+
+            const placeholder = document.createElement('div');
+            placeholder.id = 'user-weather-loading';
+            placeholder.className = 'weather-city-card';
+            placeholder.style.border = '1px dashed var(--primary)';
+            placeholder.style.display = 'flex';
+            placeholder.style.alignItems = 'center';
+            placeholder.style.justifyContent = 'center';
+            placeholder.style.minHeight = '150px';
+            placeholder.style.flex = '1';
+            placeholder.innerHTML = `
+                <div style="text-align: center; color: var(--secondary);">
+                    <span class="pulse" style="display: inline-block; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; margin-right: 8px;"></span>
+                    กำลังระบุตำแหน่งปัจจุบันของคุณ...
+                </div>
+            `;
+            grid.insertBefore(placeholder, grid.firstChild);
+
+            if (!navigator.geolocation) {
+                placeholder.innerHTML = `<div style="text-align: center; color: var(--secondary);">เบราว์เซอร์ไม่สนับสนุนการระบุตำแหน่ง</div>`;
+                setTimeout(() => placeholder.remove(), 4000);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+
+                try {
+                    let locality = '';
+                    try {
+                        const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=th`;
+                        const geoRes = await fetch(geoUrl);
+                        if (geoRes.ok) {
+                            const geoData = await geoRes.json();
+                            locality = geoData.locality || geoData.city || geoData.principalSubdivision || '';
+                        }
+                    } catch (e) {
+                        console.error('Geocoding error:', e);
+                    }
+                    if (!locality) locality = 'ตำแหน่งปัจจุบัน';
+
+                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FBangkok`;
+                    const weatherRes = await fetch(weatherUrl);
+                    if (!weatherRes.ok) throw new Error('Open-Meteo API Error');
+
+                    const data = await weatherRes.json();
+                    const current = data.current_weather;
+                    const currentInfo = getWeatherInfo(current.weathercode);
+
+                    let dailyHtml = '';
+                    for (let i = 0; i < 5; i++) {
+                        const timeStr = data.daily.time[i];
+                        const maxTemp = Math.round(data.daily.temperature_2m_max[i]);
+                        const minTemp = Math.round(data.daily.temperature_2m_min[i]);
+                        const wCode = data.daily.weathercode[i];
+                        const wInfo = getWeatherInfo(wCode);
+
+                        const d = new Date(timeStr);
+                        const thaiDay = d.toLocaleDateString('th-TH', { weekday: 'short' });
+                        const thaiDate = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+
+                        dailyHtml += `
+                            <div class="weather-forecast-day">
+                                <div class="weather-day-name"><b>${thaiDay}</b> <small style="color:var(--secondary)">${thaiDate}</small></div>
+                                <div class="weather-day-icon" title="${wInfo.text}">${wInfo.emoji} ${wInfo.text}</div>
+                                <div class="weather-day-temp">${minTemp}°C - ${maxTemp}°C</div>
+                            </div>`;
+                    }
+
+                    const userCard = document.createElement('div');
+                    userCard.className = 'weather-city-card user-location-card';
+                    userCard.style.border = '1px solid var(--primary)';
+                    userCard.style.background = 'var(--card)';
+                    userCard.style.boxShadow = '0 2px 8px rgba(26, 115, 232, 0.15)';
+                    userCard.innerHTML = `
+                        <div class="weather-city-header">
+                            <div style="font-size: 1.05rem; font-weight: 700; color: var(--primary);">📍 ${locality} (ตำแหน่งของคุณ)</div>
+                            <div class="weather-city-current">
+                                <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">${current.temperature}°C</span>
+                                <span style="font-size: 1.4rem; margin-left: 0.5rem;">${currentInfo.emoji}</span>
+                                <span style="font-size: 0.85rem; color: var(--secondary); margin-left: 0.25rem;">(${currentInfo.text})</span>
+                            </div>
+                        </div>
+                        <div class="weather-forecast-list">
+                            ${dailyHtml}
+                        </div>`;
+
+                    placeholder.replaceWith(userCard);
+                } catch (err) {
+                    console.error('Weather load error:', err);
+                    placeholder.innerHTML = `<div style="text-align: center; color: var(--secondary);">เกิดข้อผิดพลาดในการโหลดข้อมูลสภาพอากาศ</div>`;
+                    setTimeout(() => placeholder.remove(), 4000);
+                }
+            }, (err) => {
+                console.warn('Geolocation error:', err);
+                placeholder.innerHTML = `<div style="text-align: center; color: var(--secondary);">ไม่สามารถเข้าถึงตำแหน่งได้ (ไม่ได้เปิดสิทธิ์ระบุตำแหน่ง)</div>`;
+                setTimeout(() => placeholder.remove(), 4000);
+            });
+        }
+
+        function loadUserTraffic() {
+            const titleEl = document.getElementById('traffic-route-title');
+            const subtitleEl = document.getElementById('traffic-route-subtitle');
+            const navLinkEl = document.getElementById('traffic-nav-link');
+
+            if (!titleEl || !navLinkEl) return;
+
+            const originalTitle = titleEl.innerHTML;
+            const originalSubtitle = subtitleEl ? subtitleEl.innerHTML : '';
+
+            titleEl.innerHTML = `📍 กำลังระบุตำแหน่งของคุณ... &rarr; หมู่บ้านจะโปรง อ.หนองหญ้าปล้อง`;
+
+            if (!navigator.geolocation) {
+                titleEl.innerHTML = originalTitle;
+                if (subtitleEl) subtitleEl.innerHTML = `เบราว์เซอร์ไม่สนับสนุนการระบุตำแหน่ง (แสดงเส้นทางจาก จตุจักร)`;
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+
+                let locality = '';
+                try {
+                    const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=th`;
+                    const geoRes = await fetch(geoUrl);
+                    if (geoRes.ok) {
+                        const geoData = await geoRes.json();
+                        locality = geoData.locality || geoData.city || geoData.principalSubdivision || '';
+                    }
+                } catch (e) {
+                    console.error('Geocoding error:', e);
+                }
+                if (!locality) locality = 'ตำแหน่งของคุณ';
+
+                titleEl.innerHTML = `📍 ${locality} &rarr; หมู่บ้านจะโปรง อ.หนองหญ้าปล้อง`;
+                if (subtitleEl) {
+                    subtitleEl.innerHTML = `เส้นทางจากตำแหน่งปัจจุบันของคุณ สู่ อ.หนองหญ้าปล้อง จ.เพชรบุรี (แสดงสภาพจราจรสด/Real-time)`;
+                }
+
+                const encodedDest = '%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B9%88%E0%B8%9A%E0%B9%85%E0%B8%B2%E0%B8%99%E0%B8%88%E0%B8%B0%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B8%87%20%E0%B8%AD.%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%8D%E0%B9%89%E0%B8%B2%E0%B8%9B%E0%B8%A5%E0%B9%89%E0%B8%AD%E0%B8%87';
+                navLinkEl.href = `https://www.google.com/maps/dir/${lat},${lon}/${encodedDest}/data=!5m1!1e1`;
+            }, (err) => {
+                console.warn('Traffic Geolocation error:', err);
+                titleEl.innerHTML = originalTitle;
+                if (subtitleEl) {
+                    subtitleEl.innerHTML = `ไม่ได้เปิดสิทธิ์ตำแหน่ง (แสดงเส้นทางจาก จตุจักร)`;
+                    setTimeout(() => {
+                        subtitleEl.innerHTML = originalSubtitle;
+                    }, 5000);
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cat = urlParams.get('cat') || 'ทั้งหมด';
+            if (cat === 'สภาพอากาศ') {
+                loadUserWeather();
+            } else if (cat === 'จราจร') {
+                loadUserTraffic();
+            }
+        });
         // Client‑side category RSS fetch (fallback when server‑side filtering empty)
         (function(){
             const cat = new URL(window.location).searchParams.get('cat') || 'ทั้งหมด';
