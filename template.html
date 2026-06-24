@@ -91,6 +91,23 @@
             .card { padding: 1.5rem; }
             .news-item-title { font-size: 1.2rem; }
         }
+
+        /* Weather Forecast Styling */
+        .weather-card-container { background: linear-gradient(135deg, var(--card) 0%, #f0f7ff 100%); border: 1px solid #d0e3ff; margin-bottom: 1.5rem; }
+        .weather-flex-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+        @media (min-width: 768px) {
+            .weather-flex-grid { flex-direction: row; }
+            .weather-city-card { flex: 1; }
+        }
+        .weather-city-card { background: white; border-radius: 8px; border: 1px solid var(--border); padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .weather-city-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px dashed #eee; padding-bottom: 0.5rem; }
+        .weather-city-current { display: flex; align-items: center; }
+        .weather-forecast-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .weather-forecast-day { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; }
+        .weather-forecast-day:last-child { border-bottom: none; }
+        .weather-day-name { flex: 1.2; text-align: left; }
+        .weather-day-icon { flex: 1.8; text-align: left; display: flex; align-items: center; gap: 0.25rem; }
+        .weather-day-temp { flex: 1; text-align: right; font-weight: bold; color: #3c4043; }
     </style>
 </head>
 <body>
@@ -125,6 +142,14 @@
             
                 <a href="?cat=ทั้งหมด" class="nav-link {{ACTIVE_ทั้งหมด}}">
                     ทั้งหมด
+                </a>
+            
+                <a href="?cat=ข่าวเด่น" class="nav-link {{ACTIVE_ข่าวเด่น}}">
+                    ข่าวเด่น
+                </a>
+            
+                <a href="?cat=กีฬา" class="nav-link {{ACTIVE_กีฬา}}">
+                    กีฬา
                 </a>
             
                 <a href="?cat=ธุรกิจ" class="nav-link {{ACTIVE_ธุรกิจ}}">
@@ -170,14 +195,8 @@
                 <a href="?cat=ทั่วไป" class="nav-link {{ACTIVE_ทั่วไป}}">
                     ทั่วไป
                 </a>
-                </a>
             
         </nav>
-        
-            <div class="sub-nav">
-                <div style="font-size: 0.75rem; color: var(--secondary); margin-bottom: 0.5rem; font-weight: bold;">หมวดหมู่ย่อย:</div>
-                <a href="?cat=ข่าวเด่น" class="sub-link {{ACTIVE_ข่าวเด่น}}">ข่าวเด่น</a><a href="?cat=กีฬา" class="sub-link {{ACTIVE_กีฬา}}">กีฬา</a>
-            </div>
         
     </div>
     <div class="container">
@@ -193,6 +212,7 @@
             </div>
             
             <h2 style="font-size: 1.3rem; margin: 0 0 0.5rem 0;">📰 {{CATEGORY_NAME}}</h2>
+            {{WEATHER_FORECAST}}
             {{NEWS_CARDS}}
             
         </div>
@@ -365,14 +385,15 @@
         (function(){
             const cat = new URL(window.location).searchParams.get('cat') || 'ทั้งหมด';
             const rssUrlMap = {
-                'ธุรกิจ': 'https://news.google.com/rss/search?q=%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%AD%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%A2+%E0%B8%97%E0%B8%B8%E0%B8%87%E0%B8%AB%E0%B8%A3%E0%B8%89&hl=th&gl=TH&ceid=TH:th',
-                'เทคโนโลยี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%97%E0%B8%84%E0%B9%80%E0%B8%99%E0%B8%AD%E0%B8%A5%E0%B8%AD%E0%B8%88%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
+                'ข่าวเด่น': 'https://news.google.com/rss?hl=th&gl=TH&ceid=TH:th',
+                'ธุรกิจ': 'https://news.google.com/rss/search?q=%E0%B8%98%E0%B8%B8%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88&hl=th&gl=TH&ceid=TH:th',
+                'เทคโนโลยี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%97%E0%B8%84%E0%B9%82%E0%B8%99%E0%B9%82%E0%B8%A5%E0%B8%A2%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
                 'สุขภาพ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9F&hl=th&gl=TH&ceid=TH:th',
-                'สภาพอากาศ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%AB%E0%B8%9A%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%9B%E0%B8%B3%E0%B9%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
+                'สภาพอากาศ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%AD%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A8&hl=th&gl=TH&ceid=TH:th',
                 'จราจร': 'https://news.google.com/rss/search?q=%E0%B8%88%E0%B8%A3%E0%B8%B2%E0%B8%88%E0%B8%A3&hl=th&gl=TH&ceid=TH:th',
-                'การเมือง': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%A7%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
+                'การเมือง': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
                 'สังคม': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
-                'ท่องเที่ยว': 'https://news.google.com/rss/search?q=%E0%B8%97%E0%B9%82%E0%B8%AD%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B8%A2&hl=th&gl=TH&ceid=TH:th',
+                'ท่องเที่ยว': 'https://news.google.com/rss/search?q=%E0%B8%97%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7&hl=th&gl=TH&ceid=TH:th',
                 'การเกษตร': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%95%E0%B8%A3&hl=th&gl=TH&ceid=TH:th',
                 'เพชรบุรี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%9E%E0%B8%8A%E0%B8%A3%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
                 'กีฬา': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B5%E0%B8%AC%E0%B8%B2&hl=th&gl=TH&ceid=TH:th'

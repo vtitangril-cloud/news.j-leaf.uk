@@ -13,19 +13,54 @@ const PUBLIC_DIR = __dirname;
 const RSS_MAP = {
     'ทั้งหมด': 'https://news.google.com/rss?hl=th&gl=TH&ceid=TH:th',
     'ข่าวเด่น': 'https://news.google.com/rss?hl=th&gl=TH&ceid=TH:th',
-    'ธุรกิจ': 'https://news.google.com/rss/search?q=%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%AD%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%A2+%E0%B8%97%E0%B8%B8%E0%B8%87%E0%B8%AB%E0%B8%A3%E0%B8%89&hl=th&gl=TH&ceid=TH:th',
-    'เทคโนโลยี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%97%E0%B8%84%E0%B9%80%E0%B8%99%E0%B8%AD%E0%B8%A5%E0%B8%AD%E0%B8%88%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
+    'ธุรกิจ': 'https://news.google.com/rss/search?q=%E0%B8%98%E0%B8%B8%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88&hl=th&gl=TH&ceid=TH:th',
+    'เทคโนโลยี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%97%E0%B8%84%E0%B9%82%E0%B8%99%E0%B9%82%E0%B8%A5%E0%B8%A2%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
     'สุขภาพ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9F&hl=th&gl=TH&ceid=TH:th',
-    'สภาพอากาศ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%AB%E0%B8%9A%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%9B%E0%B8%B3%E0%B9%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
+    'สภาพอากาศ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%AD%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A8&hl=th&gl=TH&ceid=TH:th',
     'จราจร': 'https://news.google.com/rss/search?q=%E0%B8%88%E0%B8%A3%E0%B8%B2%E0%B8%88%E0%B8%A3&hl=th&gl=TH&ceid=TH:th',
-    'การเมือง': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%A7%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
-    'สังคม': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%AB%E0%B8%9A%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%9B%E0%B8%B3%E0%B9%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
-    'ท่องเที่ยว': 'https://news.google.com/rss/search?q=%E0%B8%97%E0%B9%82%E0%B8%AD%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B8%A2&hl=th&gl=TH&ceid=TH:th',
-    'การเกษตร': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%A7%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
+    'การเมือง': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
+    'สังคม': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
+    'ท่องเที่ยว': 'https://news.google.com/rss/search?q=%E0%B8%97%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7&hl=th&gl=TH&ceid=TH:th',
+    'การเกษตร': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%95%E0%B8%A3&hl=th&gl=TH&ceid=TH:th',
     'เพชรบุรี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%9E%E0%B8%8A%E0%B8%A3%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
     'ทั่วไป': 'https://news.google.com/rss?hl=th&gl=TH&ceid=TH:th',
     'กีฬา': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B5%E0%B8%AC%E0%B8%B2&hl=th&gl=TH&ceid=TH:th'
 };
+
+const WEATHER_CODE_MAP = {
+    0: { text: 'ฟ้าใส', emoji: '☀️' },
+    1: { text: 'แดดจ้า/เมฆบางส่วน', emoji: '🌤️' },
+    2: { text: 'มีเมฆบางส่วน', emoji: '⛅' },
+    3: { text: 'มีเมฆมาก', emoji: '☁️' },
+    45: { text: 'มีหมอก', emoji: '🌫️' },
+    48: { text: 'มีหมอกจัด', emoji: '🌫️' },
+    51: { text: 'ฝนตกละอองเบา', emoji: '🌧️' },
+    53: { text: 'ฝนตกละอองปานกลาง', emoji: '🌧️' },
+    55: { text: 'ฝนตกละอองหนาแน่น', emoji: '🌧️' },
+    56: { text: 'ฝนละอองเย็นเบา', emoji: '🌧️' },
+    57: { text: 'ฝนละอองเย็นปานกลาง', emoji: '🌧️' },
+    61: { text: 'ฝนตกเล็กน้อย', emoji: '🌧️' },
+    63: { text: 'ฝนตกปานกลาง', emoji: '🌧️' },
+    65: { text: 'ฝนตกหนัก', emoji: '🌧️' },
+    66: { text: 'ฝนตกเย็นเบา', emoji: '🌧️' },
+    67: { text: 'ฝนตกเย็นหนัก', emoji: '🌧️' },
+    71: { text: 'หิมะตกเล็กน้อย', emoji: '🌨️' },
+    73: { text: 'หิมะตกปานกลาง', emoji: '🌨️' },
+    75: { text: 'หิมะตกหนัก', emoji: '🌨️' },
+    77: { text: 'เกล็ดหิมะ', emoji: '🌨️' },
+    80: { text: 'ฝนซู่เล็กน้อย', emoji: '🌦️' },
+    81: { text: 'ฝนซู่ปานกลาง', emoji: '🌦️' },
+    82: { text: 'ฝนซู่ตกหนักมาก', emoji: '🌧️' },
+    85: { text: 'หิมะซู่เล็กน้อย', emoji: '🌨️' },
+    86: { text: 'หิมะซู่หนัก', emoji: '🌨️' },
+    95: { text: 'พายุฝนฟ้าคะนอง', emoji: '⛈️' },
+    96: { text: 'พายุฝนฟ้าคะนองและลูกเห็บตกเล็กน้อย', emoji: '⛈️' },
+    99: { text: 'พายุฝนฟ้าคะนองและลูกเห็บตกหนัก', emoji: '⛈️' }
+};
+
+function getWeatherInfo(code) {
+    return WEATHER_CODE_MAP[code] || { text: 'ไม่ทราบสภาพอากาศ', emoji: '🌤️' };
+}
 
 // Global cache for stocks, crypto, fuel, exchange rates
 let cache = {
@@ -52,6 +87,7 @@ let cache = {
         { name: '100 JPY', price: '20.56' },
         { name: '1 CNY', price: '4.88' }
     ],
+    weather: null,
     lastUpdated: new Date()
 };
 
@@ -128,6 +164,25 @@ async function updateMarketData() {
             cache.set = stockData;
         }
 
+        // Fetch Weather Forecast (Bangkok & Phetchaburi)
+        try {
+            const [bkkRes, pbiRes] = await Promise.all([
+                fetch('https://api.open-meteo.com/v1/forecast?latitude=13.7563&longitude=100.5018&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Bangkok'),
+                fetch('https://api.open-meteo.com/v1/forecast?latitude=13.1119&longitude=99.9443&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Bangkok')
+            ]);
+            if (bkkRes.ok && pbiRes.ok) {
+                const bkkData = await bkkRes.json();
+                const pbiData = await pbiRes.json();
+                cache.weather = {
+                    bkk: bkkData,
+                    pbi: pbiData,
+                    updatedAt: new Date()
+                };
+            }
+        } catch (err) {
+            console.error('Failed to fetch weather forecast:', err.message);
+        }
+
         cache.lastUpdated = new Date();
     } catch (err) {
         console.error('Failed to update market data:', err.message);
@@ -192,6 +247,72 @@ function getThaiHeaderDate(date) {
         month: 'long',
         year: 'numeric'
     }).format(date);
+}
+
+function getWeatherForecastHtml() {
+    if (!cache.weather) {
+        return `
+        <div class="card weather-card-container">
+            <p style="text-align: center; color: var(--secondary); margin: 0; padding: 1.5rem;">กำลังโหลดข้อมูลพยากรณ์อากาศ...</p>
+        </div>`;
+    }
+    
+    const { bkk, pbi } = cache.weather;
+    
+    const renderLocationHtml = (title, data) => {
+        const current = data.current_weather;
+        const currentInfo = getWeatherInfo(current.weathercode);
+        
+        let dailyHtml = '';
+        // 5-day forecast
+        for (let i = 0; i < 5; i++) {
+            const timeStr = data.daily.time[i];
+            const maxTemp = Math.round(data.daily.temperature_2m_max[i]);
+            const minTemp = Math.round(data.daily.temperature_2m_min[i]);
+            const wCode = data.daily.weathercode[i];
+            const wInfo = getWeatherInfo(wCode);
+            
+            const d = new Date(timeStr);
+            const thaiDay = d.toLocaleDateString('th-TH', { weekday: 'short' });
+            const thaiDate = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+            
+            dailyHtml += `
+                <div class="weather-forecast-day">
+                    <div class="weather-day-name"><b>${thaiDay}</b> <small style="color:var(--secondary)">${thaiDate}</small></div>
+                    <div class="weather-day-icon" title="${wInfo.text}">${wInfo.emoji} ${wInfo.text}</div>
+                    <div class="weather-day-temp">${minTemp}°C - ${maxTemp}°C</div>
+                </div>`;
+        }
+        
+        return `
+            <div class="weather-city-card">
+                <div class="weather-city-header">
+                    <div style="font-size: 1.05rem; font-weight: 700;">📍 ${title}</div>
+                    <div class="weather-city-current">
+                        <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">${current.temperature}°C</span>
+                        <span style="font-size: 1.4rem; margin-left: 0.5rem;">${currentInfo.emoji}</span>
+                        <span style="font-size: 0.85rem; color: var(--secondary); margin-left: 0.25rem;">(${currentInfo.text})</span>
+                    </div>
+                </div>
+                <div class="weather-forecast-list">
+                    ${dailyHtml}
+                </div>
+            </div>`;
+    };
+    
+    return `
+        <div class="card weather-card-container">
+            <h3 style="margin-top: 0; margin-bottom: 1rem; border-bottom: 2px solid #f1f3f4; padding-bottom: 0.5rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem;">
+                🌤️ รายงานสภาพอากาศและพยากรณ์ล่วงหน้า 5 วัน
+            </h3>
+            <div class="weather-flex-grid">
+                ${renderLocationHtml('กรุงเทพมหานคร', bkk)}
+                ${renderLocationHtml('เพชรบุรี', pbi)}
+            </div>
+            <div style="font-size: 0.7rem; color: var(--secondary); text-align: right; margin-top: 0.75rem;">
+                ข้อมูลจาก Open-Meteo • อัปเดตล่าสุด: ${new Date(cache.weather.updatedAt).toLocaleTimeString('th-TH')} น.
+            </div>
+        </div>`;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -355,6 +476,9 @@ const server = http.createServer(async (req, res) => {
             renderedHtml = renderedHtml.replace('{{MARKET_GAS_CONTENT}}', gasContentHtml);
             renderedHtml = renderedHtml.replace('{{MARKET_EXCHANGE_CONTENT}}', exchangeContentHtml);
             renderedHtml = renderedHtml.replace('{{UPDATE_TIME}}', updateTime);
+
+            const weatherForecastHtml = (category === 'สภาพอากาศ') ? getWeatherForecastHtml() : '';
+            renderedHtml = renderedHtml.replace('{{WEATHER_FORECAST}}', weatherForecastHtml);
 
             // Replace active state placeholder classes
             Object.keys(RSS_MAP).forEach(cat => {
