@@ -186,7 +186,7 @@ async function updateMarketData(updateStocks = true, updateGlobal = true) {
 
         if (updateStocks) {
             // Fetch Yahoo Finance SET index & key stocks
-            const symbols = ['%5ETH', 'PTT.BK', 'CPALL.BK', 'ADVANC.BK', 'AOT.BK'];
+            const symbols = ['%5ESET.BK', 'PTT.BK', 'CPALL.BK', 'ADVANC.BK', 'AOT.BK'];
             const stockData = [];
             for (const sym of symbols) {
                 try {
@@ -200,7 +200,7 @@ async function updateMarketData(updateStocks = true, updateGlobal = true) {
                             const changeVal = price - prevClose;
                             const changePercent = ((changeVal / prevClose) * 100).toFixed(2);
                             const changeStr = `${changeVal >= 0 ? '+' : ''}${changePercent}%`;
-                            const cleanName = sym.replace('%5ETH', 'SET').replace('.BK', '');
+                            const cleanName = sym.replace('%5ESET.BK', 'SET').replace('.BK', '');
                             stockData.push({
                                 name: cleanName,
                                 price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
