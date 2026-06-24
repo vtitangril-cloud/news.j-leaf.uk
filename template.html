@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="J-Leaf News">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a73e8">
+    <title>J-Leaf Smart News Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1a73e8; --primary-dark: #1557b0; --secondary: #5f6368; --bg: #f8f9fa; --card: #ffffff; --breaking: #ea4335; --crypto: #f7931a; --energy: #2ecc71; --border: #dadce0; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: #202124; margin: 0; padding: 0; line-height: 1.5; -webkit-tap-highlight-color: transparent; }
+        header { background: white; border-bottom: 1px solid var(--border); padding: 0.75rem 1rem; position: sticky; top: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        header h1 { color: var(--primary); margin: 0; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+        .header-date { font-size: 0.75rem; color: var(--secondary); margin-top: 2px; }
+        nav { background: white; border-bottom: 1px solid var(--border); position: sticky; top: 52px; z-index: 999; display: flex; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding: 0 0.25rem; }
+        nav::-webkit-scrollbar { display: none; }
+        .nav-link { padding: 0.85rem 0.75rem; text-decoration: none; color: var(--secondary); font-weight: 700; border-bottom: 3px solid transparent; white-space: nowrap; font-size: 0.9rem; flex-shrink: 0; transition: 0.2s; position: relative; }
+        .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .nav-alert-badge { position: absolute; top: 8px; right: 0; width: 8px; height: 8px; background: var(--breaking); border-radius: 50%; display: none; }
+        .has-breaking .nav-alert-badge { display: block; animation: blink 1s infinite; }
+        .sub-nav { background: #fff; border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; scrollbar-width: none; padding: 0.5rem; gap: 0.5rem; }
+        .sub-link { padding: 0.4rem 0.75rem; text-decoration: none; color: var(--secondary); font-size: 0.8rem; white-space: nowrap; border-radius: 20px; background: #f1f3f4; border: 1px solid transparent; }
+        .sub-link.active { background: var(--primary); color: white; font-weight: bold; }
+        .stock-ticker { background: #202124; color: white; padding: 0.35rem 0; font-size: 0.8rem; border-bottom: 1px solid #333; overflow: hidden; }
+        .up { color: #34a853; } .down { color: #ea4335; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+        .main-content { order: 2; display: flex; flex-direction: column; gap: 1rem; }
+        .sidebar { order: 1; display: flex; flex-direction: column; gap: 1rem; }
+        .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 1rem; box-shadow: 0 1px 2px rgba(60,64,67,0.1); }
+        .card h2, .card h3 { margin-top: 0; font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .badge { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 0.4rem; }
+        .news-item-title { font-size: 1.05rem; font-weight: 700; margin: 0.4rem 0; line-height: 1.4; color: #1a0dab; }
+        .news-item-title a { text-decoration: none; color: inherit; }
+        .news-meta { font-size: 0.75rem; color: var(--secondary); margin-bottom: 0.5rem; }
+        .summary { background: #f8f9fa; padding: 0.75rem; border-left: 3px solid var(--primary); margin: 0.75rem 0; font-size: 0.85rem; color: #3c4043; }
+        .breaking-item { padding: 0.6rem 0; border-bottom: 1px solid #f1f3f4; }
+        .breaking-item:last-child { border-bottom: none; }
+        .breaking-link { text-decoration: none; color: #202124; font-weight: 500; font-size: 0.9rem; display: block; line-height: 1.3; }
+        .breaking-time { font-size: 0.7rem; color: var(--secondary); margin-top: 3px; }
+        .market-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f1f3f4; font-size: 0.85rem; align-items: center; }
+        .price-val { font-weight: 700; text-align: right; line-height: 1.2; }
+        .price-usd { display: block; font-size: 0.7rem; color: #80868b; font-weight: normal; }
+        .pulse { display: inline-block; width: 6px; height: 6px; background: var(--breaking); border-radius: 50%; margin-right: 5px; animation: blink 1.2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        
+        /* PWA Install Banner */
+        #install-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #202124; color: white; padding: 1rem; display: none; align-items: center; justify-content: space-between; z-index: 3000; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-radius: 12px 12px 0 0; }
+        #install-banner .banner-text { flex: 1; margin-right: 1rem; }
+        #install-banner .banner-text h4 { margin: 0; font-size: 1rem; }
+        #install-banner .banner-text p { margin: 4px 0 0 0; font-size: 0.75rem; color: #bdc1c6; }
+        #install-banner .banner-btns { display: flex; gap: 0.5rem; align-items: center; }
+        #install-btn { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #close-install { background: transparent; color: #bdc1c6; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem; }
+
+        #market-toggle-btn { position: fixed; top: 60px; right: 10px; width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 2001; border: none; cursor: pointer; font-size: 1.2rem; }
+        #category-toggle-btn { position: fixed; top: 10px; right: 10px; width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 2001; border: none; cursor: pointer; font-size: 1.2rem; }
+        #weather-toggle-btn { position: fixed; top: 110px; right: 10px; width: 40px; height: 40px; background: #4285f4; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 2001; border: none; cursor: pointer; font-size: 1.2rem; }
+        #traffic-toggle-btn { position: fixed; top: 160px; right: 10px; width: 40px; height: 40px; background: #34a853; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 2001; border: none; cursor: pointer; font-size: 1.2rem; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; display: none; }
+        .sidebar-overlay.open { display: block; }
+        .close-sidebar, .close-category { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; color: var(--secondary); cursor: pointer; display: none; }
+        .mobile-breaking-box { display: block; border-top: 4px solid var(--breaking); margin-bottom: 1rem; }
+        .sidebar-breaking { display: block; }
+        @media (max-width: 991px) {
+            .sidebar { position: fixed; top: 0; right: -100%; width: 85%; max-width: 320px; height: 100%; background: white; z-index: 2000; transition: 0.3s ease; padding: 1rem; overflow-y: auto; box-shadow: -4px 0 12px rgba(0,0,0,0.1); order: unset; }
+            .category-sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: white; z-index: 2000; transition: 0.3s ease; padding: 1rem; overflow-y: auto; box-shadow: 4px 0 12px rgba(0,0,0,0.1); }
+            .sidebar.open, .category-sidebar.open { right: 0; }
+            .category-sidebar.open { left: 0; }
+            .close-sidebar, .close-category { display: block; }
+            .sidebar-breaking { display: none !important; }
+            nav { flex-direction: column; position: static; border: none; padding: 1rem 0; }
+            .nav-link { padding: 0.75rem 0.5rem; border-bottom: 1px solid #eee; border-left: 4px solid transparent; width: 100%; }
+            .nav-link.active { border-bottom-color: #eee; border-left-color: var(--primary); background: #f8f9fa; }
+            .sub-nav { flex-direction: column; background: #f8f9fa; padding: 0.5rem; border-radius: 8px; margin-top: 0.5rem; }
+        }
+        @media (min-width: 992px) {
+            #market-toggle-btn, #category-toggle-btn, #weather-toggle-btn, #traffic-toggle-btn, .close-sidebar, .close-category, .sidebar-overlay, .mobile-breaking-box, .category-sidebar h3 { display: none !important; }
+            header { flex-direction: row; justify-content: space-between; text-align: left; padding: 0.75rem 5%; height: 60px; }
+            header h1 { font-size: 1.6rem; }
+            nav { top: 60px; padding: 0 5%; }
+            .container { flex-direction: row; padding: 1.5rem 5%; gap: 2rem; }
+            .main-content { order: 1; flex: 2.2; }
+            .sidebar { order: 2; flex: 1; position: sticky; top: 130px; height: fit-content; display: flex !important; }
+            .card { padding: 1.5rem; }
+            .news-item-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="install-banner">
+        <div class="banner-text">
+            <h4>ติดตั้ง J-Leaf News</h4>
+            <p id="install-desc">เข้าถึงข่าวสารได้รวดเร็วเหมือนแอปจริง</p>
+        </div>
+        <div class="banner-btns">
+            <button id="install-btn">ติดตั้ง</button>
+            <button id="close-install" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+        </div>
+    </div>
+    <button id="category-toggle-btn" onclick="toggleCategory()">📂</button>
+    <button id="market-toggle-btn" onclick="toggleSidebar()">📊</button>
+    <button id="weather-toggle-btn" onclick="window.location.href='?cat=สภาพอากาศ'">🌤️</button>
+    <button id="traffic-toggle-btn" onclick="window.location.href='?cat=จราจร'">🚦</button>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeAllSidebars()"></div>
+    <div class="stock-ticker">
+        <marquee scrollamount="4">
+            {{TICKER_CONTENT}}
+        </marquee>
+    </div>
+    <header>
+        <h1>J-Leaf <span style="font-weight:300">Smart News</span></h1>
+        <div class="header-date">{{HEADER_DATE}}</div>
+    </header>
+    <div id="category-sidebar" class="category-sidebar">
+        <button class="close-category" onclick="toggleCategory()">&times;</button>
+        <h3 style="margin-bottom: 0.5rem; color: var(--primary);">📂 หมวดหมู่ข่าว</h3>
+        <nav>
+            
+                <a href="?cat=ทั้งหมด" class="nav-link {{ACTIVE_ทั้งหมด}}">
+                    ทั้งหมด
+                </a>
+            
+                <a href="?cat=ธุรกิจ" class="nav-link {{ACTIVE_ธุรกิจ}}">
+                    ธุรกิจ
+                </a>
+            
+                <a href="?cat=เทคโนโลยี" class="nav-link {{ACTIVE_เทคโนโลยี}}">
+                    เทคโนโลยี
+                </a>
+            
+                <a href="?cat=สุขภาพ" class="nav-link {{ACTIVE_สุขภาพ}}">
+                    สุขภาพ
+                </a>
+            
+                <a href="?cat=สภาพอากาศ" class="nav-link {{ACTIVE_สภาพอากาศ}}">
+                    สภาพอากาศ
+                </a>
+            
+                <a href="?cat=จราจร" class="nav-link {{ACTIVE_จราจร}}">
+                    จราจร
+                </a>
+            
+                <a href="?cat=การเมือง" class="nav-link {{ACTIVE_การเมือง}}">
+                    การเมือง
+                </a>
+            
+                <a href="?cat=สังคม" class="nav-link {{ACTIVE_สังคม}}">
+                    สังคม
+                </a>
+            
+                <a href="?cat=ท่องเที่ยว" class="nav-link {{ACTIVE_ท่องเที่ยว}}">
+                    ท่องเที่ยว
+                </a>
+            
+                <a href="?cat=การเกษตร" class="nav-link {{ACTIVE_การเกษตร}}">
+                    การเกษตร
+                </a>
+            
+                <a href="?cat=เพชรบุรี" class="nav-link {{ACTIVE_เพชรบุรี}}">
+                    เพชรบุรี
+                </a>
+            
+                <a href="?cat=ทั่วไป" class="nav-link {{ACTIVE_ทั่วไป}}">
+                    ทั่วไป
+                </a>
+                </a>
+            
+        </nav>
+        
+            <div class="sub-nav">
+                <div style="font-size: 0.75rem; color: var(--secondary); margin-bottom: 0.5rem; font-weight: bold;">หมวดหมู่ย่อย:</div>
+                <a href="?cat=ข่าวเด่น" class="sub-link {{ACTIVE_ข่าวเด่น}}">ข่าวเด่น</a><a href="?cat=กีฬา" class="sub-link {{ACTIVE_กีฬา}}">กีฬา</a>
+            </div>
+        
+    </div>
+    <div class="container">
+        <div class="main-content">
+            
+            <div class="card mobile-breaking-box">
+                <h3 style="color: var(--breaking); font-size: 1rem; display: flex; align-items: center; margin-bottom: 0.75rem;">
+                    <span class="pulse"></span> ข่าวด่วน (24 ชม. ล่าสุด)
+                </h3>
+                <div id="mobile-breaking-list">
+                    {{MOBILE_BREAKING_NEWS}}
+                </div>
+            </div>
+            
+            <h2 style="font-size: 1.3rem; margin: 0 0 0.5rem 0;">📰 {{CATEGORY_NAME}}</h2>
+            {{NEWS_CARDS}}
+            
+        </div>
+        <aside class="sidebar" id="market-sidebar">
+            <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
+            
+            <div class="card sidebar-breaking" style="border-top: 4px solid var(--breaking);">
+                <h3 style="color: var(--breaking); font-size: 1rem; display: flex; align-items: center; margin-bottom: 0.75rem;">
+                    <span class="pulse"></span> ข่าวด่วน (24 ชม. ล่าสุด)
+                </h3>
+                <div>
+                    {{SIDEBAR_BREAKING_NEWS}}
+                </div>
+            </div>
+            
+            <div class="card market-section">
+                <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">📈 ข้อมูลตลาด</h3>
+                <h4 style="font-size: 0.8rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 0.4rem; border-bottom: 1px solid #eee; padding-bottom: 3px;">📊 หุ้นไทย (SET)</h4>
+                {{MARKET_SET_CONTENT}}
+                <div style="text-align: right; margin-top: 4px; margin-bottom: 8px;">
+                    <a href="https://www.set.or.th/th/market/index" target="_blank" style="font-size: 0.7rem; color: var(--primary); text-decoration: none; font-weight: bold;">ดูหุ้นอื่นๆ เพิ่มเติม &rarr;</a>
+                </div>
+                <h4 style="font-size: 0.8rem; color: var(--crypto); text-transform: uppercase; margin-top: 1.2rem; margin-bottom: 0.4rem; border-bottom: 1px solid #eee; padding-bottom: 3px;">₿ Crypto (บาท)</h4>
+                {{MARKET_CRYPTO_CONTENT}}
+                <h4 style="font-size: 0.8rem; color: var(--energy); text-transform: uppercase; margin-top: 1.2rem; margin-bottom: 0.4rem; border-bottom: 1px solid #eee; padding-bottom: 3px;">⛽ น้ำมัน (ไทย)</h4>
+                {{MARKET_GAS_CONTENT}}
+                <h4 style="font-size: 0.8rem; color: #9b59b6; text-transform: uppercase; margin-top: 1.2rem; margin-bottom: 0.4rem; border-bottom: 1px solid #eee; padding-bottom: 3px;">💱 อัตราแลกเปลี่ยน</h4>
+                {{MARKET_EXCHANGE_CONTENT}}
+                <p style="font-size: 0.65rem; color: var(--secondary); margin-top: 1rem; line-height: 1.3;">* ข้อมูลเพื่อการอ้างอิงเบื้องต้นเท่านั้น<br>อัปเดต: {{UPDATE_TIME}} น.</p>
+            </div>
+        </aside>
+    </div>
+    <script>
+        function toggleSidebar() { 
+            document.getElementById('market-sidebar').classList.toggle('open'); 
+            document.getElementById('sidebar-overlay').classList.toggle('open'); 
+        }
+        function toggleCategory() { 
+            document.getElementById('category-sidebar').classList.toggle('open'); 
+            document.getElementById('sidebar-overlay').classList.toggle('open'); 
+        }
+        function closeAllSidebars() {
+            document.getElementById('market-sidebar').classList.remove('open');
+            document.getElementById('category-sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('open');
+        }
+        
+        function openTraffic() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    window.open("https://www.google.com/maps/@" + lat + "," + lon + ",14z/data=!5m1!1e1", "_blank");
+                }, (err) => {
+                    window.open("https://www.google.com/maps/@13.75,100.51,12z/data=!5m1!1e1", "_blank");
+                });
+            } else {
+                window.open("https://www.google.com/maps/@13.75,100.51,12z/data=!5m1!1e1", "_blank");
+            }
+        }
+        
+        // PWA Installation Logic
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installBtn = document.getElementById('install-btn');
+        const installDesc = document.getElementById('install-desc');
+
+        // Check if already in standalone mode
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+        if (!isStandalone) {
+            // Detect iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                installBanner.style.display = 'flex';
+                installDesc.innerText = 'กดปุ่ม "แชร์" และเลือก "เพิ่มลงในหน้าจอหลัก"';
+                installBtn.style.display = 'none';
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBanner.style.display = 'flex';
+            });
+        }
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installBanner.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); }); }
+
+        // Weather Logic
+        const weatherBox = document.getElementById('weather-box');
+        if (weatherBox) {
+            function getWMOIcon(code) {
+                if ([0].includes(code)) return '☀️';
+                if ([1, 2].includes(code)) return '⛅';
+                if ([3].includes(code)) return '☁️';
+                if ([45, 48].includes(code)) return '🌫️';
+                if ([51, 53, 55, 61, 63, 65].includes(code)) return '🌧️';
+                if ([80, 81, 82].includes(code)) return '🌦️';
+                if ([95, 96, 99].includes(code)) return '⛈️';
+                return '🌤️';
+            }
+
+            function renderWeather(lat, lon) {
+                const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FBangkok";
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        const daily = data.daily;
+                        let weatherHtml = '<div style="display: flex; gap: 0.75rem;">';
+                        for(let i=0; i<7; i++) {
+                            const date = new Date(daily.time[i]);
+                            const dayStr = date.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric' });
+                            const maxT = Math.round(daily.temperature_2m_max[i]);
+                            const minT = Math.round(daily.temperature_2m_min[i]);
+                            const icon = getWMOIcon(daily.weather_code[i]);
+                            const pop = daily.precipitation_probability_max[i] || 0;
+                            
+                            weatherHtml += '<div style="min-width: 85px; background: #f8f9fa; padding: 0.75rem 0.5rem; border-radius: 12px; text-align: center; flex-shrink: 0; border: 1px solid #eee;">' +
+                                    '<div style="font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: #5f6368;">' + dayStr + '</div>' +
+                                    '<div style="font-size: 1.8rem; margin: 5px 0;">' + icon + '</div>' +
+                                    '<div style="font-size: 0.9rem; font-weight: 700;">' + maxT + '° <span style="font-size: 0.7rem; color: #80868b; font-weight: normal;">' + minT + '°</span></div>' +
+                                    '<div style="font-size: 0.7rem; color: #1a73e8; margin-top: 5px; font-weight: bold;">💧 ' + pop + '%</div>' +
+                                '</div>';
+                        }
+                        weatherHtml += '</div>';
+                        document.getElementById('weather-loading').style.display = 'none';
+                        const content = document.getElementById('weather-content');
+                        content.innerHTML = weatherHtml;
+                        content.style.display = 'block';
+                    })
+                    .catch(err => {
+                        document.getElementById('weather-loading').innerText = 'ไม่สามารถโหลดข้อมูลได้ (API Error)';
+                    });
+                    
+                const geoUrl = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat + "&longitude=" + lon + "&localityLanguage=th";
+                fetch(geoUrl)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('weather-location').innerText = '📍 ' + (data.locality || data.city || data.principalSubdivision || 'ระบุตำแหน่งแล้ว');
+                    }).catch(e => {
+                        document.getElementById('weather-location').innerText = '📍 ระบุตำแหน่งแล้ว';
+                    });
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => renderWeather(pos.coords.latitude, pos.coords.longitude),
+                    (err) => {
+                        document.getElementById('weather-location').innerText = '📍 ไม่ได้เปิดสิทธิ์ตำแหน่ง (แสดง กทม.)';
+                        renderWeather(13.75, 100.51);
+                    },
+                    { timeout: 5000 }
+                );
+            } else {
+                renderWeather(13.75, 100.51);
+            }
+        }
+        // Client‑side category RSS fetch (fallback when server‑side filtering empty)
+        (function(){
+            const cat = new URL(window.location).searchParams.get('cat') || 'ทั้งหมด';
+            const rssUrlMap = {
+                'ธุรกิจ': 'https://news.google.com/rss/search?q=%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%AD%E0%B8%A3%E0%B9%88%E0%B8%AD%E0%B8%A2+%E0%B8%97%E0%B8%B8%E0%B8%87%E0%B8%AB%E0%B8%A3%E0%B8%89&hl=th&gl=TH&ceid=TH:th',
+                'เทคโนโลยี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%97%E0%B8%84%E0%B9%80%E0%B8%99%E0%B8%AD%E0%B8%A5%E0%B8%AD%E0%B8%88%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
+                'สุขภาพ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9F&hl=th&gl=TH&ceid=TH:th',
+                'สภาพอากาศ': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%AB%E0%B8%9A%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%9B%E0%B8%B3%E0%B9%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
+                'จราจร': 'https://news.google.com/rss/search?q=%E0%B8%88%E0%B8%A3%E0%B8%B2%E0%B8%88%E0%B8%A3&hl=th&gl=TH&ceid=TH:th',
+                'การเมือง': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%A1%E0%B8%A7%E0%B8%87&hl=th&gl=TH&ceid=TH:th',
+                'สังคม': 'https://news.google.com/rss/search?q=%E0%B8%AA%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%A1&hl=th&gl=TH&ceid=TH:th',
+                'ท่องเที่ยว': 'https://news.google.com/rss/search?q=%E0%B8%97%E0%B9%82%E0%B8%AD%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B8%A2&hl=th&gl=TH&ceid=TH:th',
+                'การเกษตร': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%95%E0%B8%A3&hl=th&gl=TH&ceid=TH:th',
+                'เพชรบุรี': 'https://news.google.com/rss/search?q=%E0%B9%80%E0%B8%9E%E0%B8%8A%E0%B8%A3%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5&hl=th&gl=TH&ceid=TH:th',
+                'กีฬา': 'https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B4%E0%B8%94%E0%B8%B2&hl=th&gl=TH&ceid=TH:th'
+            };
+            const url = rssUrlMap[cat];
+            if (!url) return; // no mapping, rely on server‑side rendering
+            fetch(url)
+                .then(r => r.text())
+                .then(xml => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(xml, "application/xml");
+                    const items = Array.from(doc.querySelectorAll('item')).slice(0,15);
+                    const container = document.querySelector('.main-content');
+                    if (!container) return;
+                    // Remove placeholder card if present
+                    const placeholder = container.querySelector('.card:nth-child(2)');
+                    if (placeholder && placeholder.textContent.includes('ไม่พบข่าวในหมวดหมู่นี้')) {
+                        placeholder.remove();
+                    }
+                    items.forEach(it => {
+                        const title = it.querySelector('title')?.textContent ?? '';
+                        const link = it.querySelector('link')?.textContent ?? '';
+                        const source = it.querySelector('source')?.textContent ?? 'News';
+                        const pubDate = it.querySelector('pubDate')?.textContent ?? '';
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = '<div class="news-item-title"><a href="' + link + '" target="_blank">' + title + '</a></div>' +
+                                         '<div class="news-meta">แหล่งข่าว: ' + source + ' • ' + new Date(pubDate).toLocaleString('th-TH',{timeZone:'Asia/Bangkok'}) + ' น.</div>';
+                        container.appendChild(card);
+                    });
+                })
+                .catch(e => console.error('Category RSS fetch error', e));
+        })();
+    </script>
+</body>
+</html>
+		
